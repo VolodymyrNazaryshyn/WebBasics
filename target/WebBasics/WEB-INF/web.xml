@@ -4,4 +4,23 @@
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
+
+  <servlet>
+    <servlet-name>homeServlet</servlet-name>
+    <servlet-class>itstep.learning.servlet.HomeServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>formsServlet</servlet-name>
+    <servlet-class>itstep.learning.servlet.FormsServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>homeServlet</servlet-name>
+    <url-pattern>/home</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>formsServlet</servlet-name>
+    <url-pattern>/forms</url-pattern>
+  </servlet-mapping>
+
 </web-app>

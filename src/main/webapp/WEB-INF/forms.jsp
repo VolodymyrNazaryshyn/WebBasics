@@ -2,6 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
     FormsModel model = (FormsModel) request.getAttribute("formsModel");
+    String path = request.getContextPath();
 %>
 <html>
 <head>
@@ -56,51 +57,58 @@
 <body>
 <h1>Передача данных</h1>
 <main>
-    <form action="/WebBasics/forms" method="get">
+    <form action="<%= path %>/forms" method="get">
         <h2>Form GET</h2>
         <div class="form-control">
             <label for="string1">Enter string:</label>
-            <input type="text" class="string-input" id="string1"/>
+            <input name="string" type="text" class="string-input" id="string1"/>
         </div>
         <div class="form-control">
             <label for="number1">Enter number:</label>
-            <input type="number" class="number-input" id="number1"/>
+            <input name="number" type="number" step="0.01" class="number-input" id="number1"/>
         </div>
         <div class="form-control">
             <label for="date1">Enter date:</label>
-            <input type="date" id="date1"/>
+            <input name="date" type="date" id="date1"/>
         </div>
         <div class="form-control">
             <label for="color1">Choose color:</label>
-            <input type="color" id="color1"/>
+            <input name="color" type="color" id="color1"/>
         </div>
         <div class="form-control">
             <input type="submit" value="Submit GET"/>
         </div>
     </form>
 
-    <form action="/WebBasics/forms" method="post">
+    <form action="<%= path %>/forms" method="post">
         <h2>Form POST</h2>
         <div class="form-control">
             <label for="string2">Enter string:</label>
-            <input type="text" class="string-input" id="string2"/>
+            <input name="string" type="text" class="string-input" id="string2"/>
         </div>
         <div class="form-control">
             <label for="number2">Enter number:</label>
-            <input type="number" class="number-input" id="number2"/>
+            <input name="number" type="number" class="number-input" id="number2"/>
         </div>
         <div class="form-control">
             <label for="date2">Enter date:</label>
-            <input type="date" id="date2"/>
+            <input name="date" type="date" id="date2"/>
         </div>
         <div class="form-control">
             <label for="color2">Choose color:</label>
-            <input type="color" id="color2"/>
+            <input name="color" type="color" id="color2"/>
         </div>
         <div class="form-control">
             <input type="submit" value="Submit POST"/>
         </div>
     </form>
+    <div>
+        Method = <%= model.getMethod() %> <br>
+        String = <%= model.getString() %> <br>
+        Number = <%= model.getNumber() %> <br>
+        Date = <%= model.getDate() %> <br>
+        Color = <%= model.getColor() %> <br>
+    </div>
 </main>
 </body>
 </html>

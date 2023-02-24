@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
-public class UserDao {   // Data Access Object  for entity.User
+public class UserDao implements IUserDao {   // Data Access Object  for entity.User
     private final DbService dbService ;
     private final HashService hashService ;
 
@@ -47,12 +47,12 @@ public class UserDao {   // Data Access Object  for entity.User
         String sql = "INSERT INTO Users(`id`,`login`,`name`,`salt`,`pass`,`email`) " +
                 " VALUES( UUID(), ?, ?, ?, ?, ? )" ;
         try( PreparedStatement prep = dbService.getConnection().prepareStatement( sql ) ) {
-            /*
-            Д.З. Реализовать выполнение запроса по добавлению (регистрации) пользователя
-            в БД. Внедрить коды добавления в сервлет. Проверить работоспособность
-            через форму регистрации.
-            * Стилизация регистрационной формы.
-             */
+            prep.setString(1, model.getLogin());
+            prep.setString(2, model.getName());
+            prep.setString(3, salt);
+            prep.setString(4, hash);
+            prep.setString(5, model.getEmail());
+            prep.execute();
             return true ;
         }
         catch( Exception ex ) {

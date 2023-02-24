@@ -1,6 +1,9 @@
 package itstep.learning.servlet;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import itstep.learning.data.dao.IUserDao;
+import itstep.learning.data.dao.UserDao;
 import itstep.learning.model.UserModel;
 
 import javax.servlet.ServletException;
@@ -11,6 +14,13 @@ import java.io.IOException;
 
 @Singleton
 public class UserRegisterServlet extends HttpServlet {
+    private IUserDao userDao;
+
+    @Inject
+    public UserRegisterServlet(IUserDao userDao) {
+        this.userDao = userDao;
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getRequestDispatcher( "WEB-INF/reg-user.jsp" )
@@ -22,7 +32,7 @@ public class UserRegisterServlet extends HttpServlet {
         UserModel model = parseModel( req ) ;
         try {
             validateModel( model ) ;
-
+            userDao.add(model);
         }
         catch( IllegalArgumentException ex ) {
             System.err.println( ex.getMessage() ) ;

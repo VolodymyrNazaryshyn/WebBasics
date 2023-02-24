@@ -51,3 +51,18 @@ public class CharsetFilter implements Filter {
 /forms <
          /formsprocessor -> formsprocessorServlet -> JSP (без формы, только результат)
  */
+/*
+Инверсия управления в веб-проектах (Guice)
+Добавляем две зависимости
+<!-- https://mvnrepository.com/artifact/com.google.inject/guice -->
+<!-- https://mvnrepository.com/artifact/com.google.inject.extensions/guice-servlet -->
+- заменяем файл web.xml
+- создаем пакет ioc
+  = класс ConfigListener extends GuiceServletContextListener
+  = класс RouterModule extends ServletModule
+  = класс ServiceModule extends AbstractModule
+- переносим коды управления фильтрами/сервлетами в RouterModule
+- убираем аннотации @WebServlet, @WebFilter и добавляем для
+   всех фильтров и сервлетов аннотацию @Singleton  (из com.google.inject)
+- Enjoy
+ */

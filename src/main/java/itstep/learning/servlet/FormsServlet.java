@@ -1,5 +1,6 @@
 package itstep.learning.servlet;
 
+import com.google.inject.Singleton;
 import itstep.learning.model.FormsModel;
 
 import javax.servlet.ServletException;
@@ -13,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 
+@Singleton
 public class FormsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

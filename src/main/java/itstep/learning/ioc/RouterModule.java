@@ -2,6 +2,7 @@ package itstep.learning.ioc;
 
 import com.google.inject.servlet.ServletModule;
 import itstep.learning.filter.CharsetFilter;
+import itstep.learning.filter.DbCheckFilter;
 import itstep.learning.filter.FormsFilter;
 import itstep.learning.servlet.AboutServlet;
 import itstep.learning.servlet.FormsServlet;
@@ -13,6 +14,7 @@ public class RouterModule extends ServletModule {
         // задаем фильтры
         filter("/*").through(CharsetFilter.class);
         filter("/*").through(FormsFilter.class);
+        filter("/*").through(DbCheckFilter.class);
 
         // и сервлеты
         serve("/home").with(HomeServlet.class);

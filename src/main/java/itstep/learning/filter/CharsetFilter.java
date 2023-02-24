@@ -1,10 +1,13 @@
 package itstep.learning.filter;
 
+import com.google.inject.Singleton;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Singleton
 public class CharsetFilter implements Filter {
     private FilterConfig filterConfig;
 
@@ -23,11 +26,11 @@ public class CharsetFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
         req.setCharacterEncoding("UTF-8"); // установка кодировки чтения из запроса. ДО ПЕРВОГО ЧТЕНИЯ
         resp.setCharacterEncoding("UTF-8");
-        System.out.println("Forward");
+        // System.out.println("Forward");
         // цепочку фильтров необходимо продолжить. Иначе она будет прервана и запрос прекратит обработку
         filterChain.doFilter(servletRequest, servletResponse);
         // после вызова цепочки - обратный ход (обработка ответа)
-        System.out.println("Backward");
+        // System.out.println("Backward");
     }
 
     @Override

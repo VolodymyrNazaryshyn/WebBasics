@@ -9,7 +9,8 @@
 </head>
 <body>
 <h2>Java Web</h2>
-<a href="<%= domain %>/forms">Передача данных. Формы</a>
+<a href="<%=domain%>/forms">Передача данных. Формы</a><br/>
+<a href="<%=domain%>/register">Регистрация пользователя</a><br/>
 <p>
     Сервлеты - разновидность классов, предназначенных для сетевых задач.
     Аналог из ASP - ApiController.

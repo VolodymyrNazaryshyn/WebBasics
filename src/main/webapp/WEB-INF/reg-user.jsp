@@ -1,4 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%
+    String path = request.getContextPath();
+%>
 <html>
 <head>
   <title>Reg User</title>
@@ -34,7 +37,7 @@
 <body>
 
 <main>
-  <form method="post">
+  <form method="post" enctype="multipart/form-data" action="<%= path %>/register">
     <h2>Registration</h2>
     <div class="form-control">
       <label for="user-login">Login:</label>
@@ -57,7 +60,10 @@
       <input name="user-email" type="email" id="user-email"/>
     </div>
     <div class="form-control">
-      <input type="submit" value="Send" />
+        <input type="file" name="user-avatar" accept="image/png, image/jpeg"/>
+    </div>
+    <div class="form-control">
+        <input type="submit" value="Send" />
     </div>
   </form>
 </main>

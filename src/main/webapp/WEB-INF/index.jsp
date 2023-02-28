@@ -2,12 +2,6 @@
 <%
     String domain = request.getContextPath();
 %>
-<html>
-<head>
-    <meta charset="UTF-8" />
-    <title>Java</title>
-</head>
-<body>
 <h2>Java Web</h2>
 <a href="<%=domain%>/forms">Передача данных. Формы</a><br/>
 <a href="<%=domain%>/register">Регистрация пользователя</a><br/>
@@ -29,5 +23,3 @@
     логику обработки - только отображение). Основной способ передачи - атрибуты
     запроса
 </p>
-</body>
-</html>

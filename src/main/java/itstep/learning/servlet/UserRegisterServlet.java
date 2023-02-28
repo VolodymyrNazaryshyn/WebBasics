@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -35,16 +36,22 @@ public class UserRegisterServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("WEB-INF/reg-user.jsp")
-                .forward(req, resp);
+        req.setAttribute("viewName", "reg-user");
+        HttpSession session = req.getSession();
+        String regMessage = (String) session.getAttribute("reg-message");
+        if (regMessage != null) {
+            req.setAttribute("reg-message", regMessage);
+            session.removeAttribute("reg-message");
+        }
+        req.getRequestDispatcher("WEB-INF/_layout.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String regMessage;
         try {
-            UserModel model = parseModel( req ) ;
-            validateModel( model ) ;
+            UserModel model = parseModel(req);
+            validateModel(model);
             if (userDao.add(model)) {
                 regMessage = "OK";
             } else {

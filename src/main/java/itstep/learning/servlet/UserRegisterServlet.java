@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 
 @Singleton
@@ -40,19 +41,22 @@ public class UserRegisterServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String regMessage;
         try {
             UserModel model = parseModel( req ) ;
             validateModel( model ) ;
             if (userDao.add(model)) {
-                System.out.println("Add OK");
+                regMessage = "OK";
+            } else {
+                regMessage = "Add fail";
             }
-            else {
-                System.err.println("Add fail");
-            }
+        } catch (IllegalArgumentException ex) {
+            System.err.println(ex.getMessage());
+            regMessage = ex.getMessage();
         }
-        catch( IllegalArgumentException ex ) {
-            System.err.println( ex.getMessage() ) ;
-        }
+        HttpSession session = req.getSession();
+        session.setAttribute("reg-message", regMessage);
+        resp.sendRedirect(req.getRequestURI());
     }
 
     private UserModel parseModel(HttpServletRequest req) {
@@ -66,28 +70,35 @@ public class UserRegisterServlet extends HttpServlet {
             model.setEmail(parameters.get("user-email").getString());
             // проверка и сохранение файла
             FileItem avatar = parameters.get("user-avatar");
+
+            String[] extensionsArray = {"png", "jpg", "gif", "jpeg", "svg"};
+
             if (!avatar.isFormField()) { // это файловое поле
                 if (avatar.getSize() > 0) { // есть данные
                     String filename = avatar.getName();
                     int dotPosition = filename.lastIndexOf('.');
                     String extension = filename.substring(dotPosition);
-                    // TODO: проверить на допустимое расширение файла
-                    // Имя файла сохранить опасно - генерируем случайное имя и проверяем на существование файла
-                    String savedName = "";
-                    String path = req.getServletContext().getRealPath("/") + "../avatars";
-                    File file;
-                    do {
-                        savedName = hashService.getHexHash(savedName + System.nanoTime()) + extension;
-                        file = new File(path, savedName);
-                    } while (file.exists());
-                    avatar.write(file); // сохраняем файл в постоянном хранилище
-                    model.setAvatar(savedName);
+                    if (Arrays.asList(extensionsArray).contains(extension)) {
+                        // Имя файла сохранить опасно - генерируем случайное имя и проверяем на существование файла
+                        String savedName = "";
+                        String path = req.getServletContext().getRealPath("/") + "../avatars";
+                        File file;
+                        do {
+                            savedName = hashService.getHexHash(savedName + System.nanoTime()) + extension;
+                            file = new File(path, savedName);
+                        } while (file.exists());
+                        avatar.write(file); // сохраняем файл в постоянном хранилище
+                        model.setAvatar(savedName);
+                    }
+                    else {
+                        System.err.println(extension + " is invalid extension, choose from " + Arrays.toString(extensionsArray));
+                    }
                 }
             }
             return model;
         }
         catch (Exception ex) {
-            if(ex instanceof IllegalArgumentException) throw (IllegalArgumentException)ex;
+            if (ex instanceof IllegalArgumentException) throw (IllegalArgumentException) ex;
             System.err.println(ex.getMessage());
             return null;
         }
@@ -111,12 +122,7 @@ public class UserRegisterServlet extends HttpServlet {
             String login = model.getLogin();
             if ("".equals(login)) message = "user-login should not be empty";
             else {
-                // TODO: проверить логин на занятость
-                /*
-                	Д.З. В UserDao реализовать метод проверки логина на свободность/занятость
-	                использовать его в валидаторе модели пользователя
-	                * реализовать проверку загруженных файлов-аватарок на допустимые расширения
-                 */
+                if (userDao.isLoginUse(login)) message = "Login in Use";
             }
         }
         if (message == null) {

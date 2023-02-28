@@ -61,6 +61,20 @@ public class UserDao implements IUserDao {   // Data Access Object  for entity.U
             return false ;
         }
     }
+
+    public boolean isLoginUse(String login) {
+        String sqlString = "SELECT COUNT(*) FROM Users u WHERE u.login = '" + login + "'";
+        try(Statement statement = dbService.getConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(sqlString);
+            resultSet.next();
+            return resultSet.getInt(1) == 0 ? false : true;
+        }
+        catch(SQLException ex) {
+            System.err.println( "UserDao::isLoginUse " + ex.getMessage() ) ;
+            return true;
+        }
+    }
+
     private String getPassHash( String password, String salt ) {
         return hashService.getHexHash( salt + password ) ;
     }

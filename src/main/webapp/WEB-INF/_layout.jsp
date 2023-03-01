@@ -82,13 +82,22 @@
         // setTimeout(() => { M.Modal.getInstance(window.auth_modal).close(); }, 1000)
         const authLogin = document.getElementById("auth-login").value;
         const authPass = document.getElementById("auth-pass").value;
-        fetch("<%= contextPath %>/auth", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: `auth-login=${authLogin}&auth-pass=${authPass}`
-        }).then(r => r.text()).then(console.log);
+
+        if (authLogin.length < 3) {
+            console.error("Login must be more then 3 symbols");
+        }
+        else if (authPass.length < 3) {
+            console.error("Password must be more then 3 symbols");
+        }
+        else {
+            fetch("<%= contextPath %>/auth", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `auth-login=${authLogin}&auth-pass=${authPass}`
+            }).then(r => r.text()).then(console.log);
+        }
     });
 });</script>
 </body>

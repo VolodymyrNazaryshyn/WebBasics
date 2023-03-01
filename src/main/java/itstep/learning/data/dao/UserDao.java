@@ -75,6 +75,20 @@ public class UserDao implements IUserDao {   // Data Access Object  for entity.U
         }
     }
 
+    public User getUser(String login, String password) {
+        String sql = "SELECT * FROM users WHERE login = ? AND pass = ?";
+        try(PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+            prep.setString(1, login);
+            prep.setString(2, password);
+            ResultSet res =  prep.executeQuery();
+            if(res.next()) return new User(res);
+        }
+        catch (Exception ex) {
+            System.err.println("UserDao::getUser" + ex.getMessage());
+        }
+        return null;
+    }
+
     private String getPassHash( String password, String salt ) {
         return hashService.getHexHash( salt + password ) ;
     }

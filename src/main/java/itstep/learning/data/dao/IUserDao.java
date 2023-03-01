@@ -10,4 +10,5 @@ public interface IUserDao {
     List<User> getAll();
     boolean add(@Nonnull UserModel model);
     boolean isLoginUse(String login);
+    User getUser(String login, String password);
 }

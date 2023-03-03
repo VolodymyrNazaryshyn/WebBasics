@@ -13,6 +13,7 @@ import java.io.IOException;
 
 @Singleton
 public class UserAuthServlet extends HttpServlet {
+    @Inject
     private IUserDao userDao;
 
     @Inject
@@ -25,14 +26,20 @@ public class UserAuthServlet extends HttpServlet {
         String authLogin = req.getParameter("auth-login");
         String authPass = req.getParameter("auth-pass");
 
-        if (authPass == null || authLogin == null
-                || authLogin.equals("") || authPass.equals("")) {
-            resp.getWriter().print("NO");
+        if (authPass != null && authLogin != null) {
+            User user = userDao.getUserByCredentials(authLogin, authPass);
+            if (user != null) {
+                req.getSession().setAttribute("authUser", user);
+                resp.getWriter().print("OK");
+                return;
+            }
         }
-        else {
-            resp.getWriter().print("OK");
-            User user = userDao.getUser("Visitor", "eec53a2bc0bb9fac8b80ec9a2c66db4f");
-            System.out.println(user.toString());
-        }
+        resp.getWriter().print("NO");
     }
 }
+/*
+    Авторизация - предоставление доступа ранее аутентифицированному пользователю
+    Схемы:
+     на сессиях (серверная) -- xSP (ASP, JSP, PHP) -- cookie передаются браузером
+     на токенах (клиентская) -- SPA (React, Angular) -- не полагается на cookie, заменяя их своими токенами
+ */

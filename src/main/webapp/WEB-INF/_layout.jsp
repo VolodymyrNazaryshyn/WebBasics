@@ -1,9 +1,13 @@
+<%@ page import="com.google.inject.Inject" %>
+<%@ page import="itstep.learning.service.auth.AuthService" %>
+<%@ page import="itstep.learning.data.entity.User" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
     String contextPath = request.getContextPath();
     String viewName = (String) request.getAttribute("viewName");
     if (viewName == null) viewName = "index";
     String viewPage = viewName + ".jsp";
+    User authUser = (User) request.getAttribute("authUser");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,8 +33,15 @@
                         <li <%= viewName.equals("reg-user") ? "class='active'" : "" %> ><a
                                 href="<%= contextPath %>/register"><i class="material-icons left">person</i>Registration</a>
                         </li>
-                        <li><a href="#auth_modal" class="waves-effect waves-light modal-trigger"><i
-                                class="material-icons left">person_outline</i>Log in</a></li>
+                        <% if (authUser == null) { %>
+                        <li>
+                            <a href="#auth_modal" class="waves-effect waves-light modal-trigger"><i class="material-icons left">person_outline</i>Log in</a>
+                        </li>
+                        <% } else { %>
+                        <li>
+                            <a href="?logout"><i class="material-icons left">exit_to_app</i>Log out</a>
+                        </li>
+                        <% } %>
                     </ul>
                     <script>const mainMenu = document.getElementById("main-menu");
                     const mob = mainMenu.cloneNode(true);
@@ -85,18 +96,19 @@
 
         if (authLogin.length < 3) {
             console.error("Login must be more then 3 symbols");
-        }
-        else if (authPass.length < 3) {
+        } else if (authPass.length < 3) {
             console.error("Password must be more then 3 symbols");
-        }
-        else {
+        } else {
             fetch("<%= contextPath %>/auth", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
                 body: `auth-login=${authLogin}&auth-pass=${authPass}`
-            }).then(r => r.text()).then(console.log);
+            }).then(r => r.text()).then(t => {
+                if (t == "OK") window.location = window.location;
+                else console.log(t);
+            });
         }
     });
 });</script>

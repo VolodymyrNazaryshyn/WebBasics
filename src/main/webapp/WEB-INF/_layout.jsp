@@ -33,6 +33,11 @@
                 <div class="col s12">
                     <a href="<%= contextPath %>" class="brand-logo">Web Basics</a>
                     <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                    <% if (authUser != null) { %>
+                    <img src="<%= contextPath %>/image/<%= authUser.getAvatar() %>" alt=""
+                         class="right"
+                         style="width: 44px; height: 44px; border-radius: 50%; margin-top: 10px">
+                    <% } %>
                     <ul class="right hide-on-med-and-down" id="main-menu">
                         <li <%= viewName.equals("index") ? "class='active'" : "" %> ><a
                                 href="<%= contextPath %>/home"><i class="material-icons left">home</i>Home</a></li>
@@ -113,12 +118,6 @@
     var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems, {});
     auth_button.addEventListener("click", e => {
-        /* fetch(POST){login, pass} -> /auth                        fetch(login) - challenge(random)
-            ->OK => обновляем страницу (текущую)                     hash(pass+challenge) -> fetch
-            ->NO => выводим сообщение на модальном окне                     -> OK | ->NO
-         */
-        // console.log("click");
-        // setTimeout(() => { M.Modal.getInstance(window.auth_modal).close(); }, 1000)
         const authLogin = document.getElementById("auth-login").value;
         const authPass = document.getElementById("auth-pass").value;
         const loginError = document.getElementById("login-error");

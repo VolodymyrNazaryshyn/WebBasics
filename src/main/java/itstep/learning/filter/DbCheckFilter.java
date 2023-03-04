@@ -19,6 +19,7 @@ public class DbCheckFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        // System.out.println("DbCheckFilter");
         try {
             dbService.getConnection() ;    // проверка подключения
             filterChain.doFilter( servletRequest, servletResponse ) ;

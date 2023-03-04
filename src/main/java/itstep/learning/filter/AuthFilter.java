@@ -22,6 +22,7 @@ public class AuthFilter implements Filter { // AuthMiddleware
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
+        // System.out.println("AuthFilter");
         if (servletRequest.getParameter("logout") != null) {
             authService.logout(request);
             // изменение статуса авторизации должно перегружать страницу

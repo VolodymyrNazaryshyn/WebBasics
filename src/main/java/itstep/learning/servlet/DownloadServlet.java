@@ -23,10 +23,17 @@ public class DownloadServlet extends HttpServlet {
         File file = new File(path, requestedFile);
         if (file.isFile() && file.canRead()) {
             String mimeType = Files.probeContentType(file.toPath());
+            System.out.println(mimeType);
+
             // проверка типа файла на изображение
-            if( ! mimeType.startsWith("image") ) {
+            if( ! mimeType.startsWith("image") || (mimeType.endsWith("gif") || mimeType.endsWith("avif"))) {
                 resp.setStatus(415);
                 resp.getWriter().print("Unsupported Media Type: " + mimeType);
+                return;
+            }
+
+            if(mimeType.endsWith("class") || mimeType.endsWith("php") || mimeType.endsWith("exe")) {
+                System.err.println("DownloadServlet:: forbidden type: " + mimeType);
                 return;
             }
 

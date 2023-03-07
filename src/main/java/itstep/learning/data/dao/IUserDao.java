@@ -11,4 +11,6 @@ public interface IUserDao {
     boolean add(@Nonnull UserModel model);
     boolean isLoginUse(String login);
     User getUserByCredentials(String login, String password);
+    User getUserByLogin(String login);
+    User getUserProfile(String login);
 }

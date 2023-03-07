@@ -6,7 +6,7 @@
     String contextPath = request.getContextPath();
     String viewName = (String) request.getAttribute("viewName");
     if (viewName == null) viewName = "index";
-    String viewPage = viewName + ".jsp";
+    String viewPage = "/WEB-INF/" + viewName + ".jsp";
     User authUser = (User) request.getAttribute("authUser");
 %>
 <!DOCTYPE html>
@@ -34,9 +34,11 @@
                     <a href="<%= contextPath %>" class="brand-logo">Web Basics</a>
                     <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                     <% if (authUser != null) { %>
-                    <img src="<%= contextPath %>/image/<%= authUser.getAvatar() %>" alt=""
-                         class="right"
-                         style="width: 44px; height: 44px; border-radius: 50%; margin-top: 10px">
+                    <a href="<%= contextPath %>/profile/<%= authUser.getLogin() %>">
+                        <img src="<%= contextPath %>/image/<%= authUser.getAvatar() %>" alt=""
+                             class="right"
+                             style="width: 44px; height: 44px; border-radius: 50%; margin-top: 10px">
+                    </a>
                     <% } %>
                     <ul class="right hide-on-med-and-down" id="main-menu">
                         <li <%= viewName.equals("index") ? "class='active'" : "" %> ><a

@@ -94,6 +94,32 @@ public class UserDao implements IUserDao {   // Data Access Object  for entity.U
         return null;
     }
 
+    @Override
+    public User getUserByLogin(String login) {
+        String sql = "SELECT * FROM users WHERE login = ?";
+        try(PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+            prep.setString(1, login);
+            ResultSet res =  prep.executeQuery();
+            if(res.next()) {
+                return new User(res);
+            }
+        }
+        catch (Exception ex) {
+            System.err.println("UserDao::getUserByLogin" + ex.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public User getUserProfile(String login) {
+        User user = this.getUserByLogin(login);
+        if(user != null) {
+            user.setPass("");
+            user.setSalt("");
+        }
+        return user;
+    }
+
     private String getPassHash( String password, String salt ) {
         return hashService.getHexHash( salt + password ) ;
     }

@@ -28,5 +28,6 @@ public class RouterModule extends ServletModule {
         serve("/auth").with(UserAuthServlet.class);
         serve("/register").with(UserRegisterServlet.class);
         serve("/image/*").with(DownloadServlet.class);
+        serve("/profile/*").with(UserProfileServlet.class);
     }
 }

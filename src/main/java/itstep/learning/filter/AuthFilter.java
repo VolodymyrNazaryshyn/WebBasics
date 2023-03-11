@@ -8,11 +8,13 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Singleton
 public class AuthFilter implements Filter { // AuthMiddleware
-    @Inject
-    AuthService authService;
+    @Inject private AuthService authService;
+    @Inject private Logger logger; // Guice auto inject JUL
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -21,6 +23,8 @@ public class AuthFilter implements Filter { // AuthMiddleware
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        // logger.log(Level.WARNING, "Warning from AuthFilter");
+
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         // System.out.println("AuthFilter");
         if (servletRequest.getParameter("logout") != null) {

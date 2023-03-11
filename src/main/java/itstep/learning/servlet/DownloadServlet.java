@@ -13,8 +13,7 @@ import java.nio.file.Files;
 
 @Singleton
 public class DownloadServlet extends HttpServlet {
-    @Inject @Named("AvatarFolder")
-    private String avatarFolder;
+    @Inject @Named("AvatarFolder") private String avatarFolder;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

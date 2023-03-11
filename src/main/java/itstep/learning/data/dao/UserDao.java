@@ -14,15 +14,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Singleton
 public class UserDao implements IUserDao {   // Data Access Object  for entity.User
     private final DbService dbService ;
     private final HashService hashService ;
+    private final Logger logger;
 
-    @Inject public UserDao( DbService dbService, HashService hashService ) {
+    @Inject public UserDao(DbService dbService, HashService hashService, Logger logger) {
         this.dbService = dbService ;
         this.hashService = hashService ;
+        this.logger = logger;
     }
 
     public List<User> getAll() {

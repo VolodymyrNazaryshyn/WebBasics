@@ -11,13 +11,14 @@
         <h2 class="header" style="text-align: center">My profile</h2>
         <div class="card horizontal">
             <div class="card-image">
-                <img id="avatar" style="max-width: 90%" src="<%= contextPath %>/image/<%= myProfile.getAvatar()%>" alt=""/>
+                <img id="avatar" style="max-width: 90%" src="<%= contextPath %>/image/<%= myProfile.getAvatar()%>"
+                     alt=""/>
                 <label for="avatar_uploads" class="btn-floating btn-small waves-effect waves-light teal"
-                   style="position: absolute; top: 5px; right: 35px;"
+                       style="position: absolute; top: 5px; right: 35px;"
                 >
                     <i class="material-icons" style="font-size: 1rem;">edit</i>
                 </label>
-                <input hidden id="avatar_uploads" type="file" name="avatar_uploads" accept=".jpg, .jpeg, .png" />
+                <input hidden id="avatar_uploads" type="file" name="avatar_uploads" accept=".jpg, .jpeg, .png"/>
             </div>
             <div class="card-stacked">
                 <div class="card-content"
@@ -103,6 +104,36 @@
     </div>
 </div>
 
+<!-- Save name Modal -->
+<div id="save_name_modal" class="modal">
+    <div class="modal-content">
+        <h4 style="text-align: center" id="save_name_title"></h4>
+    </div>
+    <div class="modal-footer">
+        <div class="btn" id="save_name_button">
+            <i class="material-icons left">save</i>Save
+        </div>
+        <div class="btn" id="cancel_save_name_button">
+            <span>Cancel</span>
+        </div>
+    </div>
+</div>
+
+<!-- Save email Modal -->
+<div id="save_email_modal" class="modal">
+    <div class="modal-content">
+        <h4 style="text-align: center" id="save_email_title"></h4>
+    </div>
+    <div class="modal-footer">
+        <div class="btn" id="save_email_button">
+            <i class="material-icons left">save</i>Save
+        </div>
+        <div class="btn" id="cancel_save_email_button">
+            <span>Cancel</span>
+        </div>
+    </div>
+</div>
+
 <script>
     const fileTypes = [
         "image/apng",
@@ -116,44 +147,140 @@
         "image/webp",
         "image/x-icon"
     ];
+    const icon_edit = '<i class="material-icons" style="font-size: 1rem;">edit</i>';
+    const icon_save = '<i class="material-icons" style="font-size: 1rem;">save</i>';
+
+    const onBlurElem = (editableElem, oldValue, editBtn, modal, modalTitle) => {
+        editableElem.onblur = () => {
+            const curValue = editableElem.innerText
+            if (curValue !== oldValue) {
+                let instance = M.Modal.init(modal, {dismissible: false});
+                modalTitle.innerText = "Save new value: " + editableElem.innerText
+                instance.open();
+            }
+            editableElem.removeAttribute("contenteditable")
+            editBtn.innerHTML = icon_edit;
+            oldValue = curValue
+        }
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
+        let oldValue;
+        const userName = document.getElementById("user-name");
+        const email = document.getElementById("email");
+
         const userNameBtn = document.getElementById("user-name-btn");
-        userNameBtn.addEventListener("click", (e) => {
-            const userName = document.getElementById("user-name");
-            if(userName.getAttribute("contenteditable")) { // заверщение редактирования
+        userNameBtn.addEventListener("click", () => {
+            let oldNameValue = userName.innerText;
+            oldValue = oldNameValue
+
+            if (userName.getAttribute("contenteditable")) { // завершение редактирования
                 userName.removeAttribute("contenteditable")
-                e.target.innerHTML = '<i class="material-icons" style="font-size: 1rem;">edit</i>'
-            }
-            else {
+                userNameBtn.innerHTML = icon_edit;
+            } else {
                 userName.setAttribute("contenteditable", "true");
+                userNameBtn.innerHTML = icon_save;
                 userName.focus();
-                e.target.innerHTML = '<i class="material-icons" style="font-size: 1rem;">save</i>'
+                // move cursor to end of contenteditable
+                let sel = window.getSelection();
+                sel.selectAllChildren(userName);
+                sel.collapseToEnd();
             }
+
+            userName.onkeydown = (keyboardEvent) => {
+                if (keyboardEvent.key === "Enter") userName.blur()
+            }
+
+            const modal = document.getElementById('save_name_modal');
+            const modalTitle = document.getElementById("save_name_title");
+            onBlurElem(userName, oldNameValue, userNameBtn, modal, modalTitle)
+        });
+
+        const saveNameButton = document.getElementById("save_name_button");
+        saveNameButton.addEventListener("click", () => {
+            fetch(window.location.href, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: `{"userName": "${userName.innerText}"}`
+            }).then(r => r.text()).then(resp => console.log("change userName: " + resp));
+
+            M.Modal.getInstance(window.save_name_modal).close();
+            userName.removeAttribute("contenteditable")
+            userNameBtn.innerHTML = icon_edit;
+        });
+
+        cancel_save_name_button.addEventListener("click", () => {
+            M.Modal.getInstance(window.save_name_modal).close();
+            userNameBtn.innerHTML = icon_edit;
+            userName.removeAttribute("contenteditable")
+            userName.innerText = oldValue;
         });
 
         const emailBtn = document.getElementById("email-btn");
-        emailBtn.addEventListener("click", (e) => {
-            const email = document.getElementById("email");
-            if(email.getAttribute("contenteditable")) {
+        emailBtn.addEventListener("click", () => {
+            let oldEmailValue = email.innerText;
+            oldValue = oldEmailValue
+
+            if (email.getAttribute("contenteditable")) { // завершение редактирования
                 email.removeAttribute("contenteditable")
-                e.target.innerHTML = '<i class="material-icons" style="font-size: 1rem;">edit</i>'
-            }
-            else {
+                emailBtn.innerHTML = icon_edit;
+            } else {
                 email.setAttribute("contenteditable", "true");
+                emailBtn.innerHTML = icon_save;
                 email.focus();
-                e.target.innerHTML = '<i class="material-icons" style="font-size: 1rem;">save</i>'
+                // move cursor to end of contenteditable
+                let sel = window.getSelection();
+                sel.selectAllChildren(email);
+                sel.collapseToEnd();
             }
+
+            email.onkeydown = (keyboardEvent) => {
+                if (keyboardEvent.key === "Enter") email.blur()
+            }
+
+            const modal = document.getElementById('save_email_modal');
+            const modalTitle = document.getElementById("save_email_title");
+            onBlurElem(email, oldEmailValue, emailBtn, modal, modalTitle)
         });
+
+        const saveEmailButton = document.getElementById("save_email_button");
+        saveEmailButton.addEventListener("click", () => {
+            fetch(window.location.href, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: `{"email": "${email.innerText}"}`
+            }).then(r => r.text()).then(resp => console.log("change email: " + resp));
+
+            M.Modal.getInstance(window.save_email_modal).close();
+            email.removeAttribute("contenteditable")
+            emailBtn.innerHTML = icon_edit;
+        });
+
+        cancel_save_email_button.addEventListener("click", () => {
+            M.Modal.getInstance(window.save_email_modal).close();
+            emailBtn.innerHTML = icon_edit;
+            email.removeAttribute("contenteditable")
+            email.innerText = oldValue;
+        })
 
         const avatarUploadBtn = document.getElementById("avatar_uploads");
         avatarUploadBtn.addEventListener("change", (e) => {
             const avatar = document.getElementById("avatar");
             const file = e.target.files[0];
             if (fileTypes.includes(file.type)) {
+                let formData = new FormData();
+                formData.append("userAvatar", file);
+                fetch(window.location.href, {
+                    method: "PATCH",
+                    body: formData
+                }).then(r => r.text()).then(console.log)
+
                 avatar.src = URL.createObjectURL(file)
-            }
-            else {
+            } else {
                 alert(`File name ${file.name} not a valid file type`)
             }
         });
@@ -170,3 +297,9 @@
         });
     });
 </script>
+
+<!--
+Д.З. Реализовать кнопки, позволяющие редактировать почту
+* по событию кнопки сохранения или нажатию "Enter" проверять были ли изменения
+контента (имени/почты) и выводить подтверждение: "Сохранить изменения: (Новое значение)"
+-->

@@ -13,4 +13,5 @@ public interface IUserDao {
     User getUserByCredentials(String login, String password);
     User getUserByLogin(String login);
     User getUserProfile(String login);
+    boolean updateName(User user);
 }

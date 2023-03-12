@@ -124,6 +124,21 @@ public class UserDao implements IUserDao {   // Data Access Object  for entity.U
         return user;
     }
 
+    @Override
+    public boolean updateName(User user) {
+        String sql = "UPDATE users u SET u.`name` = ? WHERE u.`id` = ?";
+        try(PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+            prep.setString(1, user.getName());
+            prep.setString(2, user.getId().toString());
+            prep.executeUpdate();
+            return true;
+        }
+        catch (Exception ex) {
+            logger.log(Level.WARNING, ex.getMessage());
+        }
+        return false;
+    }
+
     private String getPassHash( String password, String salt ) {
         return hashService.getHexHash( salt + password ) ;
     }

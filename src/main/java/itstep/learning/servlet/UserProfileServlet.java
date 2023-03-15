@@ -97,6 +97,21 @@ public class UserProfileServlet extends HttpServlet {
                 if(userDao.updateName(user)) body = "OK";
                 else body = "500";
             }
+            if(obj.has("email")) {
+                // запрос на изменение email
+                String email = obj.optString("email");
+                // TODO: валидировать email
+                // проверяем авторизацию
+                User user = authService.getAuthUser();
+                if(user == null) {
+                    resp.setStatus(401);
+                    resp.getWriter().print("Unauthorized");
+                    return;
+                }
+                user.setEmail(email);
+                if(userDao.updateEmail(user)) body = "OK";
+                else body = "500";
+            }
         }
         catch (JSONException ex) {
             logger.log(Level.WARNING, ex.getMessage());
@@ -131,9 +146,11 @@ public class UserProfileServlet extends HttpServlet {
             String oldAvatar = user.getAvatar();
             if(oldAvatar != null) {
                 File file = new File(path, oldAvatar);
+                // System.out.println(file.getAbsolutePath());
                 file.delete();
             }
-
+            user.setAvatar(newAvatar);
+            userDao.updateAvatar(user);
         }
         catch (FileUploadException ex) {
             resp.getWriter().print(ex.getMessage());

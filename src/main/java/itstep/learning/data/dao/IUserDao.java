@@ -14,4 +14,6 @@ public interface IUserDao {
     User getUserByLogin(String login);
     User getUserProfile(String login);
     boolean updateName(User user);
+    boolean updateEmail(User user);
+    boolean updateAvatar(User user);
 }

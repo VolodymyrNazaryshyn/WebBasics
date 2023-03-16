@@ -2,6 +2,7 @@ package itstep.learning.data;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import itstep.learning.data.dao.TaskDao;
 import itstep.learning.data.dao.TeamDao;
 import itstep.learning.data.dao.UserDao;
 
@@ -12,9 +13,10 @@ public class DataContext {
     private final TaskDao taskDao;
 
     @Inject
-    public DataContext(UserDao userDao, TeamDao teamDao) {
+    public DataContext(UserDao userDao, TeamDao teamDao, TaskDao taskDao) {
         this.userDao = userDao;
         this.teamDao = teamDao;
+        this.taskDao = taskDao;
     }
 
     public UserDao getUserDao() {
@@ -23,5 +25,9 @@ public class DataContext {
 
     public TeamDao getTeamDao() {
         return teamDao;
+    }
+
+    public TaskDao getTaskDao() {
+        return taskDao;
     }
 }

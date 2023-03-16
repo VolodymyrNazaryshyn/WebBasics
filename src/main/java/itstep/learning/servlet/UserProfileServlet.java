@@ -255,4 +255,25 @@ INSERT INTO `teams_users` VALUES ('da3daa7f-c1c2-11ed-9caa-3c7c3fbb1a48', 'f9001
 INSERT INTO `teams_users` VALUES ('0c95ce09-c1c3-11ed-9caa-3c7c3fbb1a48', 'f9001d31-b6a7-11ed-98a7-3c7c3fbb1a48');
 INSERT INTO `teams_users` VALUES ('290a7b7a-c1c3-11ed-9caa-3c7c3fbb1a48', 'f9001d31-b6a7-11ed-98a7-3c7c3fbb1a48');
 
+INSERT INTO `teams_users` VALUES ('da3daa7f-c1c2-11ed-9caa-3c7c3fbb1a48', 'f9001d31-b6a7-11ed-98a7-3c7c3fbb1a48');
+INSERT INTO `teams_users` VALUES ('0c95ce09-c1c3-11ed-9caa-3c7c3fbb1a48', 'f9001d31-b6a7-11ed-98a7-3c7c3fbb1a48');
+INSERT INTO `teams_users` VALUES ('290a7b7a-c1c3-11ed-9caa-3c7c3fbb1a48', 'f9001d31-b6a7-11ed-98a7-3c7c3fbb1a48');
+
+INSERT INTO `teams_users` VALUES ('da3daa7f-c1c2-11ed-9caa-3c7c3fbb1a48', 'e6c81ac5-c43a-11ed-a002-3c7c3fbb1a48');
+INSERT INTO `teams_users` VALUES ('290a7b7a-c1c3-11ed-9caa-3c7c3fbb1a48', 'cc626c7e-c43a-11ed-a002-3c7c3fbb1a48');
+
+INSERT INTO `teams_users` VALUES ('da3daa7f-c1c2-11ed-9caa-3c7c3fbb1a48', '94b69d4d-c43a-11ed-a002-3c7c3fbb1a48');
+INSERT INTO `teams_users` VALUES ('290a7b7a-c1c3-11ed-9caa-3c7c3fbb1a48', '94b69d4d-c43a-11ed-a002-3c7c3fbb1a48');
+
+INSERT INTO `teams_users` VALUES ('0c95ce09-c1c3-11ed-9caa-3c7c3fbb1a48', '73adb69f-c43a-11ed-a002-3c7c3fbb1a48');
+
+INSERT INTO `teams_users` VALUES ('290a7b7a-c1c3-11ed-9caa-3c7c3fbb1a48', '1d465302-c43b-11ed-a002-3c7c3fbb1a48');
+INSERT INTO `teams_users` VALUES ('0c95ce09-c1c3-11ed-9caa-3c7c3fbb1a48', '1d465302-c43b-11ed-a002-3c7c3fbb1a48');
+
+INSERT INTO `teams_users` VALUES ('0c95ce09-c1c3-11ed-9caa-3c7c3fbb1a48', '0b5ad019-c43a-11ed-a002-3c7c3fbb1a48');
+INSERT INTO `teams_users` VALUES ('290a7b7a-c1c3-11ed-9caa-3c7c3fbb1a48', '0b5ad019-c43a-11ed-a002-3c7c3fbb1a48');
+INSERT INTO `teams_users` VALUES ('da3daa7f-c1c2-11ed-9caa-3c7c3fbb1a48', '0b5ad019-c43a-11ed-a002-3c7c3fbb1a48');
+
+INSERT INTO `teams_users` VALUES ('290a7b7a-c1c3-11ed-9caa-3c7c3fbb1a48', '04d6467b-c43b-11ed-a002-3c7c3fbb1a48');
+
  */

@@ -203,3 +203,56 @@ public class UserProfileServlet extends HttpServlet {
         }
     }
 }
+
+/*
+Команды: пользователи могут состоять в разных командах
+Задачи: задача ставится любым участником команды, вся команда явдяется исполнителем и "видит" чат
+Чат: по каждой задаче свой чат, писать и просматривать могут только участники
+
+CREATE TABLE `teams` (
+    `id` char(36) NOT NULL COMMENT 'UUID',
+    `name` varchar(64) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
+
+CREATE TABLE `teams_users` (
+    `id_team` char(36) NOT NULL,
+    `id_user` char(36) NOT NULL,
+
+    PRIMARY KEY (`id_team`, `id_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
+
+CREATE TABLE `tasks` (
+    `id` char(36) NOT NULL COMMENT 'UUID',
+    `name` varchar(64) NOT NULL,
+    `status` int DEFAULT 0,
+    `id_user` char(36) NOT NULL COMMENT 'Author',
+    `id_team` char(36) NOT NULL,
+    `created_dt` datetime DEFAULT CURRENT_TIMESTAMP,
+    `deadline` datetime,
+    `priority` TINYINT default 0,
+
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
+
+CREATE TABLE `stories` (
+    `id` char(36) NOT NULL COMMENT 'UUID',
+    `id_user` char(36) NOT NULL COMMENT 'Author',
+    `id_task` char(36) NOT NULL,
+    `id_reply` char(36) NULL COMMENT 'Other story id',
+    `content` TEXT NOT NULL,
+    `created_dt` datetime DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
+
+INSERT INTO `teams` VALUES('da3daa7f-c1c2-11ed-9caa-3c7c3fbb1a48', 'Frontend');
+INSERT INTO `teams` VALUES('0c95ce09-c1c3-11ed-9caa-3c7c3fbb1a48', 'Backend');
+INSERT INTO `teams` VALUES('290a7b7a-c1c3-11ed-9caa-3c7c3fbb1a48', 'Designer');
+
+INSERT INTO `teams_users` VALUES ('da3daa7f-c1c2-11ed-9caa-3c7c3fbb1a48', 'f9001d31-b6a7-11ed-98a7-3c7c3fbb1a48');
+INSERT INTO `teams_users` VALUES ('0c95ce09-c1c3-11ed-9caa-3c7c3fbb1a48', 'f9001d31-b6a7-11ed-98a7-3c7c3fbb1a48');
+INSERT INTO `teams_users` VALUES ('290a7b7a-c1c3-11ed-9caa-3c7c3fbb1a48', 'f9001d31-b6a7-11ed-98a7-3c7c3fbb1a48');
+
+ */

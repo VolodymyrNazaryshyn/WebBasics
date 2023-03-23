@@ -26,7 +26,7 @@
         }
     </style>
 </head>
-<body>
+<body style="background: cadetblue">
 <div class="container" style="width:85%; margin-top:5px">
     <div class="row">
         <nav class="nav teal darken-2">
@@ -161,7 +161,7 @@
                 },
                 body: `auth-login=${authLogin}&auth-pass=${authPass}`
             }).then(r => r.text()).then(t => {
-                if (t == "OK") window.location = window.location;
+                if (t == "OK") window.location.reload();
                 else passError.innerHTML = "Invalid credentials";
             });
         });

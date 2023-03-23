@@ -12,16 +12,13 @@ public class AboutModel {
     public String getMessage() {
         return message;
     }
-
+    public void setMessage(String message) {
+        this.message = message;
+    }
     public Date getMoment() {
         return moment;
     }
-
     public void setMoment(Date moment) {
         this.moment = moment;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }

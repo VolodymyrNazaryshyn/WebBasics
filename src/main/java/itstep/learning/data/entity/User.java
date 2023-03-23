@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-public class User {  // ORM for DB table Users
+public class User extends Entity {  // ORM for DB table Users
     // region fields
     private UUID id;
     private String login;
@@ -24,9 +24,6 @@ public class User {  // ORM for DB table Users
     public User() {
     }
 
-    private static final SimpleDateFormat sqlDatetime =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     public User(ResultSet res) throws RuntimeException {
         try {
             setId(UUID.fromString(res.getString("id")));
@@ -36,15 +33,11 @@ public class User {  // ORM for DB table Users
             setPass(res.getString("pass"));
             setEmail(res.getString("email"));
             setConfirm(res.getString("confirm"));
-            ;
             setAvatar(res.getString("avatar"));
-            ;
             setRoleId(res.getString("role_id"));
-            ;
-            setRegDt(sqlDatetime.parse(res.getString("reg_dt")));
+            setRegDt(Entity.sqlDatetimeFormat.parse(res.getString("reg_dt")));
             String deleteDtString = res.getString("delete_dt");
-            if (deleteDtString != null)
-                setDeleteDt(sqlDatetime.parse(deleteDtString));
+            if (deleteDtString != null) setDeleteDt(Entity.sqlDatetimeFormat.parse(deleteDtString));
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }
@@ -52,7 +45,6 @@ public class User {  // ORM for DB table Users
     // endregion
 
     // region accessors
-
     public UUID getId() {
         return id;
     }
@@ -140,7 +132,6 @@ public class User {  // ORM for DB table Users
     public void setRoleId(String roleId) {
         this.roleId = roleId;
     }
-
     // endregion
 }
 /*

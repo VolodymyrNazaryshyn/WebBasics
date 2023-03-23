@@ -42,10 +42,16 @@
     </div>
     <!-- endregion Конец блока задач -->
 
+    <!-- region Блок обсуждения (комментариев) -->
+    <p id="chat"></p>
+    <form method="post" id="story-form">
+        <textarea id="textarea1" class="materialize-textarea" name="story-text"></textarea>
+        <div class="row input-field right-align">
+            <button class="btn waves-effect waves-teal" type="submit">Отправить<i class="material-icons right">add</i></button>
         </div>
-        <div class="row input-field"><i class="material-icons prefix">event_available</i>
-            <input id="task-deadline" type="text" class="datepicker" name="task-deadline">
-            <label for="task-deadline">Завершение</label>
+        <input type="hidden" name="story-id-task" />
+    </form>
+
     <!-- region Добавить задачу -->
     <div class="row" style="width: 100%">
         <h4 style="text-align: center">Добавить задачу</h4>
@@ -226,9 +232,21 @@
     document.addEventListener('submit', e => {
         e.preventDefault();
         switch(e.target.id) {
+            case 'story-form': sendStoryForm(); break;
             case 'task-form': sendTaskForm(); break;
         }
     });
+
+    function sendStoryFormHttp() {
+        fetch('<%= domain + "/story" %>', {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded",},
+            body: new URLSearchParams(new FormData(document.querySelector("#story-form")))
+        }).then(r => r.text()).then(console.log);
+    }
+
+    const people_icon = document.getElementById("people-icon");
+    const exclamation_mark_icon = document.getElementById("exclamation-mark-icon");
 
     function sendTaskForm() {
         fetch(window.location.href, {
@@ -284,5 +302,11 @@
         M.Modal.getInstance(window.error_modal).close();
     });
 
+    window.addEventListener('hashchange', () => {
+        const taskId = window.location.hash.substring(1);
+        if (! /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(taskId) ) return;
+
+        document.querySelector('input[name="story-id-task"]').value = taskId ;
+        console.log(taskId);
     });
 </script>

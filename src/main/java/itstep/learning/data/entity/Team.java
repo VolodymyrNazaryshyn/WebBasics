@@ -3,7 +3,7 @@ package itstep.learning.data.entity;
 import java.sql.ResultSet;
 import java.util.UUID;
 
-public class Team {
+public class Team extends Entity {
     private UUID id;
     private String name;
 

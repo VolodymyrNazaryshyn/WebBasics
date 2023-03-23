@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-public class Task {
+public class Task extends Entity {
     private UUID id;
     private String name;
     private int status;
@@ -14,8 +14,6 @@ public class Task {
     private Date createdDt;
     private Date deadline;
     private byte priority;
-
-    public static final SimpleDateFormat sqlDatetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public Task() {
     }
@@ -27,15 +25,15 @@ public class Task {
             setStatus(res.getInt("status"));
             setIdUser(UUID.fromString(res.getString("id_user")));
             setIdTeam(UUID.fromString(res.getString("id_team")));
-            setCreatedDt(sqlDatetime.parse(res.getString("created_dt")));
-            setDeadline(sqlDatetime.parse(res.getString("deadline")));
+            setCreatedDt(Entity.sqlDatetimeFormat.parse(res.getString("created_dt")));
+            setDeadline(Entity.sqlDatetimeFormat.parse(res.getString("deadline")));
             setPriority(res.getByte("priority"));
         } catch (Exception ex) {
             throw new RuntimeException(ex.getMessage());
         }
     }
 
-    // region Get|Set
+    // region accessors
     public UUID getId() {
         return id;
     }
@@ -99,7 +97,7 @@ public class Task {
     public void setPriority(byte priority) {
         this.priority = priority;
     }
-    // endregion Get|Set
+    // endregion
 }
 /*
 `id`         char(36) NOT NULL COMMENT 'UUID',

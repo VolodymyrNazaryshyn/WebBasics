@@ -2,6 +2,7 @@ package itstep.learning.data.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import itstep.learning.data.entity.Entity;
 import itstep.learning.data.entity.Task;
 import itstep.learning.data.entity.Team;
 import itstep.learning.data.entity.User;
@@ -28,6 +29,20 @@ public class TaskDao {
         this.logger = logger;
     }
 
+    public boolean updateStatus(Task task) {
+        String sql = "UPDATE tasks t SET t.`status` = ? WHERE t.`id` = ?";
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+            prep.setInt(1, task.getStatus() == 0 ? 1 : 0);
+            prep.setString(2, task.getId().toString());
+            prep.executeUpdate();
+            return true;
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, ex.getMessage());
+        }
+        return false;
+    }
+
+
     public boolean add(TaskModel model) {
         String sql = "INSERT INTO `tasks` (`id`,`name`,`status`,`id_user`,`id_team`,`created_dt`,`deadline`,`priority`) " +
                 " VALUES( UUID(), ?, 0, ?, ?, CURRENT_TIMESTAMP, ?, ? ) ";
@@ -36,7 +51,7 @@ public class TaskDao {
             prep.setString(1, model.getName());
             prep.setString(2, model.getAuthor().getId().toString());
             prep.setString(3, model.getIdTeam().toString());
-            prep.setString(4, Task.sqlDatetime.format(model.getDeadline()));
+            prep.setString(4, Entity.sqlDatetimeFormat.format(model.getDeadline()));
             prep.setByte(5, model.getPriority());
             prep.executeUpdate();
             return true;
@@ -60,7 +75,7 @@ public class TaskDao {
     }
 
     public List<Task> getUserTask(User user) {
-        String sql = "SELECT t.* FROM `tasks` t " + "WHERE t.`id_user` = ?";
+        String sql = "SELECT t.* FROM `tasks` t JOIN `teams_users` tu on t.`id_team` = tu.`id_team`  WHERE tu.`id_user` = ?";
         try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
             prep.setString(1, user.getId().toString());
             List<Task> task = new ArrayList<>();

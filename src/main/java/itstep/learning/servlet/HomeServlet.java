@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.util.List;
 
@@ -33,8 +34,6 @@ public class HomeServlet extends HttpServlet {
 
         List<Task> tasks = authUser == null ? null : dataContext.getTaskDao().getUserTask(authUser);
         req.setAttribute("tasks", tasks);
-
-        System.out.println(tasks);
 
         req.setAttribute("viewName", "index");
         req.getRequestDispatcher("WEB-INF/_layout.jsp").forward(req, resp);
@@ -86,5 +85,15 @@ public class HomeServlet extends HttpServlet {
             System.err.println(ex.getMessage());
             resp.getWriter().print(ex.getMessage());
         }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        User authUser = authService.getAuthUser();
+        List<Task> tasks = authUser == null ? null : dataContext.getTaskDao().getUserTask(authUser);
+        if ( dataContext.getTaskDao().updateStatus( tasks.get(req.getIntHeader("taskNumber") ) ) ) {
+            resp.getWriter().print("OK");
+        }
+        else throw new RuntimeException("Inner error");
     }
 }

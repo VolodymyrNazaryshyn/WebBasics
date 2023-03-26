@@ -58,6 +58,8 @@
         </div>
         <input type="hidden" name="story-id-task" />
     </form>
+    <textarea id="textarea2"></textarea>
+    <button onclick="sendClick()">Send</button>
 </div>
 <!-- endregion -->
 
@@ -301,7 +303,49 @@
         close_task_button.addEventListener("click", () => {
             M.Modal.getInstance(window.open_task_modal).close();
         });
+
+        initWebsocket();
     });
+
+    // function sendClick() {
+    //    window.websocket.send(
+    //        document.getElementById("textarea2").value
+    //    );
+    // }
+
+    function initWebsocket() {
+       window.websocket = new WebSocket(`ws://${window.location.host}/WebBasics/chat`);
+       window.websocket.onopen = onWsOpen;
+       window.websocket.onmessage = onWsMessage;
+       window.websocket.onclose = onWsClose;
+       window.websocket.onerror = onWsError;
+    }
+
+    function onWsOpen(e) {
+       // console.log("onWsOpen", e)
+    }
+
+    function onWsMessage(e) {
+       // console.log("onWsMessage", e.data)
+       let model = JSON.parse(e.data);
+       if(typeof model.status !== 'undefined') {
+           alert("Message was not sent");
+       }
+       else {
+           const chat = document.getElementById("chat");
+           const html = htmlFromStoryModel(model);
+           chat.insertAdjacentElement("afterend", html);
+       }
+    }
+
+    function onWsClose(e) {
+       // console.log("onWsClose", e)
+    }
+
+    function onWsError(e) {
+       console.log("onWsError", e)
+    }
+
     document.addEventListener('submit', e => {
         e.preventDefault();
         switch(e.target.id) {
@@ -381,6 +425,7 @@
 
         document.querySelector('input[name="story-id-task"]').value = taskId ;
         console.log(taskId);
+        // Получить список историй по этой задаче и отобразить
         fetch("<%= domain %>/story?task-id=" + taskId)
             .then(r => r.json())
             .then(j => {

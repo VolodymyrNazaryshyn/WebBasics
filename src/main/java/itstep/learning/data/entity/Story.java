@@ -28,7 +28,7 @@ public class Story extends Entity {
             this.setContent(res.getString("content"));
             this.setCreatedDt(Entity.sqlDatetimeFormat.parse(res.getString("created_dt")));
         } catch (Exception ex) {
-            System.out.println("From entity:: " + ex.getMessage());
+            System.err.println("From entity:: " + ex.getMessage());
             throw new RuntimeException(ex.getMessage());
         }
     }

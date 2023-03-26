@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.text.ParseException;
 import java.util.List;
 
@@ -29,11 +28,17 @@ public class HomeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User authUser = authService.getAuthUser();
 
-        List<Team> teams = authUser == null ? null : dataContext.getTeamDao().getUserTeams(authUser);
+        List<Team> teams = authUser == null ? null : dataContext.getTeamDao().getAll();
         req.setAttribute("teams", teams);
+
+        List<Team> userTeams = authUser == null ? null : dataContext.getTeamDao().getUserTeams(authUser);
+        req.setAttribute("userTeams", userTeams);
 
         List<Task> tasks = authUser == null ? null : dataContext.getTaskDao().getUserTask(authUser);
         req.setAttribute("tasks", tasks);
+
+        List<User> users = authUser == null ? null : dataContext.getUserDao().getAll();
+        req.setAttribute("users", users);
 
         req.setAttribute("viewName", "index");
         req.getRequestDispatcher("WEB-INF/_layout.jsp").forward(req, resp);
@@ -91,9 +96,10 @@ public class HomeServlet extends HttpServlet {
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User authUser = authService.getAuthUser();
         List<Task> tasks = authUser == null ? null : dataContext.getTaskDao().getUserTask(authUser);
-        if ( dataContext.getTaskDao().updateStatus( tasks.get(req.getIntHeader("taskNumber") ) ) ) {
+
+        if ( dataContext.getTaskDao().updateStatus( tasks.get(req.getIntHeader("taskNumber") ) ) )
             resp.getWriter().print("OK");
-        }
-        else throw new RuntimeException("Inner error");
+        else
+            throw new RuntimeException("Inner error");
     }
 }

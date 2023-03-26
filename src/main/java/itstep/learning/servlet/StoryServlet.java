@@ -33,18 +33,33 @@ public class StoryServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Story> stories = dataContext.getStoryDao().getListByTask("1aa6a403-c4d7-11ed-a002-3c7c3fbb1a48");
+        resp.setHeader("Content-Type", "application/json");
+
+        String taskId = req.getParameter("task-id");
+        try {
+            UUID.fromString(taskId);
+        }
+        catch (IllegalArgumentException ignored) {
+            resp.setStatus(400);
+            resp.getWriter().print("\"Invalid parameter (UUID required)\"");
+            return;
+        }
+        List<Story> stories = dataContext.getStoryDao().getListByTask(taskId);
         List<StoryViewModel> storyViewModels = new ArrayList<>();
         for (Story story : stories) {
-            StoryViewModel model = new StoryViewModel(story, dataContext.getUserDao().getById(story.getIdUser()), null);
+            StoryViewModel model = new StoryViewModel(
+                    story,
+                    dataContext.getUserDao().getById(story.getIdUser()),
+                    null
+            );
             if (story.getIdReply() != null) {
                 Story reply = dataContext.getStoryDao().getById(story.getIdReply());
                 model.setReplyStory(new StoryViewModel(reply, dataContext.getUserDao().getById(reply.getIdUser()), null));
             }
             storyViewModels.add(model);
         }
-        resp.setHeader("Content-Type", "application/json");
         resp.getWriter().print(
+                 // new Gson().toJson(stories)
                  new GsonBuilder().serializeNulls().create().toJson( storyViewModels )) ;
     }
 

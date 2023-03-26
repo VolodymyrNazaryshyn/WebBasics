@@ -2,13 +2,18 @@ package itstep.learning.data.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import itstep.learning.data.entity.Entity;
 import itstep.learning.data.entity.Story;
 import itstep.learning.data.entity.Task;
 import itstep.learning.service.DbService;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -42,6 +47,35 @@ public class StoryDao {
         }
     }
 
+    public Story create(Story story) {
+        story.setId(UUID.randomUUID());
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
+        try {
+            story.setCreatedDt(
+                    new SimpleDateFormat("yyyy-MM-dd'T'hh-mm-ss").parse(zonedDateTime.toString())
+            );
+        }
+        catch (Exception ignored) {}
+
+        story.setCreatedDt(new Date());
+        String sql = "INSERT INTO stories  ( `id`, `id_user`, `id_task`, `id_reply`, `content`, `created_dt`) "
+                + "VALUES( ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+            prep.setString(1, story.getId().toString());
+            prep.setString(2, story.getIdUser().toString());
+            prep.setString(3, story.getIdTask().toString());
+            UUID idReply = story.getIdReply();
+            prep.setString(4, idReply == null ? null : idReply.toString());
+            prep.setString(5, story.getContent());
+            prep.setString(6, Entity.sqlDatetimeFormat.format(story.getCreatedDt()));
+            prep.executeUpdate();
+            return story;
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, ex.getMessage());
+            return null;
+        }
+    }
+
     public Story getById(Object id) throws IllegalArgumentException {
         UUID _id = null;
         if (id instanceof Story) {
@@ -51,13 +85,12 @@ public class StoryDao {
         } else if (id instanceof String) {
             try {
                 _id = UUID.fromString((String) id);
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) {}
         }
         if (_id == null) {
             throw new IllegalArgumentException("Argument 'task' should be Task or UUID or String. Given " + id);
         }
-        String sql = "SELECT s.* FROM stories s WHERE s.id = ?";
+        String sql = "SELECT s.* FROM stories s WHERE s.id = ? ORDER BY s.createdDt DESC";
         try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
             prep.setString(1, _id.toString());
             ResultSet res = prep.executeQuery();
@@ -77,8 +110,7 @@ public class StoryDao {
         } else if (task instanceof String) {
             try {
                 taskId = UUID.fromString((String) task);
-            } catch (Exception ignored) {
-            }
+            } catch (Exception ignored) {}
         }
         if (taskId == null) {
             throw new IllegalArgumentException("Argument 'task' should be Task or UUID or String. Given " + task);

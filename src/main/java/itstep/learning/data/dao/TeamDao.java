@@ -2,8 +2,10 @@ package itstep.learning.data.dao;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import itstep.learning.data.entity.Entity;
 import itstep.learning.data.entity.Team;
 import itstep.learning.data.entity.User;
+import itstep.learning.model.TaskModel;
 import itstep.learning.service.DbService;
 
 import java.sql.PreparedStatement;
@@ -52,6 +54,60 @@ public class TeamDao {
         } catch (SQLException ex) {
             logger.log(Level.WARNING, ex.getMessage());
             return null;
+        }
+    }
+
+    public boolean addTeam(String teamName) {
+        String sql = "INSERT INTO `teams` (`id`,`name`) VALUES(UUID(), ?)";
+
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+            prep.setString(1, teamName);
+            prep.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            logger.log(Level.WARNING, ex.getMessage());
+            return false;
+        }
+    }
+
+    public boolean isTeamExist(String teamName) {
+        String sql = "SELECT COUNT(*) FROM Teams t WHERE t.name = '" + teamName + "'";
+
+        try (Statement statement = dbService.getConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(sql);
+            resultSet.next();
+            return resultSet.getInt(1) == 0 ? false : true;
+        } catch (SQLException ex) {
+            logger.log(Level.WARNING, ex.getMessage());
+            return true;
+        }
+    }
+
+    public boolean addUserToTeam(String id_team, String id_user) {
+        String sql = "INSERT INTO `teams_users` (`id_team`,`id_user`) VALUES(?, ?)";
+
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+            prep.setString(1, id_team);
+            prep.setString(2, id_user);
+            prep.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            logger.log(Level.WARNING, ex.getMessage());
+            return false;
+        }
+    }
+
+    public boolean isUserExist(String id_team, String id_user) {
+        String sql = "SELECT COUNT(*) FROM `teams_users` tu WHERE tu.id_team = '"
+                + id_team + "' AND tu.id_user = '" + id_user + "'";
+
+        try (Statement statement = dbService.getConnection().createStatement()) {
+            ResultSet resultSet = statement.executeQuery(sql);
+            resultSet.next();
+            return resultSet.getInt(1) == 0 ? false : true;
+        } catch (SQLException ex) {
+            logger.log(Level.WARNING, ex.getMessage());
+            return true;
         }
     }
 }

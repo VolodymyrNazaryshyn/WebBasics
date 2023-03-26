@@ -8,13 +8,15 @@
     String domain = request.getContextPath();
     User authUser = (User) request.getAttribute("authUser");
     List<Team> teams = (List<Team>) request.getAttribute("teams");
+    List<Team> userTeams = (List<Team>) request.getAttribute("userTeams");
     List<Task> tasks = (List<Task>) request.getAttribute("tasks");
+    List<User> users = (List<User>) request.getAttribute("users");
 %>
 
+<!-- region Tasks block -->
 <div style="display: block; width: 100%; background: lightblue; border-radius: 20px">
-    <!-- region Блок задач -->
     <div style="display: flex; flex-direction: column; width: 95%; margin: auto;">
-        <h4 style="text-align: center">Активные задачи</h4>
+        <h4 style="text-align: center">Active tasks</h4>
         <% for (int i = 1; i <= tasks.size(); ++i) { %>
             <div class="task" id="task<%= i %>" style="padding: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between">
                 <div style="display: flex; align-items: center;">
@@ -30,72 +32,129 @@
                     <b hidden id="task<%= i %>_priority"><%= tasks.get(i - 1).getPriority() %></b>
                     <b hidden id="task<%= i %>_status"><%= tasks.get(i - 1).getStatus() %></b>
                 </div>
-                <div style="display: flex; align-items: center">
+                <div style="display: flex; align-items: center; gap: 5px">
                     <i id="check_box_icon<%= i %>" style="cursor: pointer" class="material-icons">check_box_outline_blank</i>
                     <i id="eye_icon<%= i %>" style="cursor: pointer" class="material-icons">remove_red_eye</i>
                     <i id="edit_icon<%= i %>" class="material-icons">edit</i>
                     <i id="delete_icon<%= i %>" class="material-icons">delete</i>
-                    <a href="#<%= tasks.get(i - 1).getId() %>" style="color: black; text-decoration: underline">Discus</a>
+                    <a id="mail_icon<%= i %>" href="#<%= tasks.get(i - 1).getId() %>" style="cursor: pointer; margin-top: 5px">
+                        <i style="color: black" class="material-icons">mail</i>
+                    </a>
                 </div>
             </div>
         <% } %>
     </div>
-    <!-- endregion Конец блока задач -->
+</div>
+<!-- endregion -->
 
-    <!-- region Блок обсуждения (комментариев) -->
-    <p id="chat"></p>
-    <form method="post" id="story-form">
+<!-- region Discuss block -->
+<div style="display: block; width: 100%; background: lightblue; border-radius: 20px; margin-top: 15px">
+    <h4 style="text-align: center">Discussion block</h4>
+    <div id="chat" style="width: 90%; margin: auto"></div>
+    <form method="post" id="story-form" style="width: 90%; margin: auto">
         <textarea id="textarea1" class="materialize-textarea" name="story-text"></textarea>
         <div class="row input-field right-align">
-            <button class="btn waves-effect waves-teal" type="submit">Отправить<i class="material-icons right">add</i></button>
+            <button class="btn waves-effect waves-teal" type="submit" style="margin-bottom: 15px">Send<i class="material-icons right">add</i></button>
         </div>
         <input type="hidden" name="story-id-task" />
     </form>
+</div>
+<!-- endregion -->
 
-    <!-- region Добавить задачу -->
+<!-- region Add task block -->
+<div style="display: block; width: 100%; background: lightblue; border-radius: 20px">
     <div class="row" style="width: 100%">
-        <h4 style="text-align: center">Добавить задачу</h4>
+        <h4 style="text-align: center">Add task</h4>
         <form class="col s10 offset-s1 m8 offset-m2 l6 offset-l3" method="post" id="task-form">
             <div class="row input-field">
                 <i class="material-icons prefix">content_paste</i>
                 <input id="task-name" type="text" name="task-name">
-                <label for="task-name">Название</label>
+                <label for="task-name">Name task</label>
             </div>
             <div class="row input-field">
                 <div id="task-team">
                     <i class="material-icons prefix" id="people-icon" style="position: absolute; top: 0; padding-top: 9px; padding-bottom: 9px;">people_outline</i>
                     <select name="task-team">
-                        <option value="" disabled selected>Выберите команду</option>
-                        <% for (Team team : teams) { %>
-                            <option value="<%= team.getId() %>"><%= team.getName() %></option>
+                        <option value="" disabled selected>Choose team</option>
+                        <% for (Team userTeam : userTeams) { %>
+                            <option value="<%= userTeam.getId() %>"><%= userTeam.getName() %></option>
                         <% } %>
                     </select>
-                    <label style="margin-top: 10px">Команда</label>
+                    <label style="margin-top: 10px">Team</label>
                 </div>
             </div>
             <div class="row input-field">
                 <i class="material-icons prefix">event_available</i>
                 <input id="task-deadline" type="text" class="datepicker" name="task-deadline">
-                <label for="task-deadline">Завершение</label>
+                <label for="task-deadline">Deadline</label>
             </div>
             <div class="row input-field">
                 <div id="task-priority">
                     <i class="material-icons prefix" id="exclamation-mark-icon" style="position: absolute; top: 0; padding-top: 9px; padding-bottom: 9px;">priority_high</i>
                     <select name="task-priority">
-                        <option value="" disabled selected>Выберите приоритет</option>
-                        <option value="0">Обычный</option>
-                        <option value="1">Высокий</option>
-                        <option value="2">Экстремальный</option>
+                        <option value="" disabled selected>Choose priority</option>
+                        <option value="0">Usual</option>
+                        <option value="1">High</option>
+                        <option value="2">Extreme</option>
                     </select>
-                    <label style="margin-top: 10px">Приоритет</label>
+                    <label style="margin-top: 10px">Priority</label>
                 </div>
             </div>
             <div class="row input-field right-align">
                 <button class="btn waves-effect waves-teal" type="submit">
-                    создать<i class="material-icons right">add</i>
+                    add<i class="material-icons right">add</i>
                 </button>
             </div>
         </form>
+    </div>
+</div>
+<!-- endregion -->
+
+<div style="display: block; width: 100%; background: lightblue; border-radius: 20px; margin-bottom: 20px">
+    <!-- region Add team block -->
+    <div class="row" style="width: 100%">
+        <h4 style="text-align: center">Add team</h4>
+        <div style="display: flex; align-items: center; justify-content: center; margin: 0 50px 0; gap: 20px">
+            <div class="row input-field" style="width: 70%">
+                <i class="material-icons prefix">people_outline</i>
+                <input id="team-name" type="text" name="team-name">
+                <label for="team-name">Team name</label>
+            </div>
+            <button class="btn waves-effect waves-teal" id="add-team-btn">
+                add<i class="material-icons right">add</i>
+            </button>
+        </div>
+    </div>
+    <!-- endregion -->
+
+    <!-- region Add user to team block  -->
+    <div class="row" style="margin: 0 40px 0">
+        <h4 style="text-align: center">Add user to team</h4>
+        <div class="row input-field">
+            <i class="material-icons prefix">people_outline</i>
+            <select id="add-team" name="add-team">
+                <option value="" disabled selected>Choose team</option>
+                <% for (Team team : teams) { %>
+                <option value="<%= team.getId() %>"><%= team.getName() %></option>
+                <% } %>
+            </select>
+            <label>Team</label>
+        </div>
+        <div class="row input-field">
+            <i class="material-icons prefix">tag_faces</i>
+            <select id="add-user-to-team" name="add-user-to-team">
+                <option value="" disabled selected>Choose user</option>
+                <% for (User user : users) { %>
+                <option value="<%= user.getId() %>"><%= user.getName() %></option>
+                <% } %>
+            </select>
+            <label>User</label>
+        </div>
+        <div style="margin-bottom: 15px; display: flex; justify-content: end">
+            <button class="btn waves-effect waves-teal" id="add-user-to-team-btn">
+                add<i class="material-icons right">add</i>
+            </button>
+        </div>
     </div>
     <!-- endregion -->
 </div>
@@ -136,6 +195,15 @@
 <!-- endregion -->
 
 <script>
+    const tpl = `
+<div style="padding: 10px 20px; border-bottom: 1px solid black;">
+    <div style="display: flex; justify-content: space-between;">
+        <div>{{user}}</div>
+        <div>{{moment}}</div>
+    </div>
+    <div style="margin-top: 15px;">{{content}}</div>
+</div>
+`;
     const new_task_name = document.getElementById("task-name");
     const new_task_team = document.getElementById("task-team");
     const new_task_deadline = document.getElementById("task-deadline");
@@ -159,7 +227,6 @@
             const task_status = document.getElementById(`task${i + 1}_status`);
 
             const task_priority_icon = document.getElementById(`task${i + 1}_priority_icon`);
-            const eye_icon = document.getElementById(`eye_icon${i + 1}`);
             const check_box_icon = document.getElementById(`check_box_icon${i + 1}`);
             const priority = parseInt(task_priority.innerText) + 1;
             const task = document.getElementById(`task${i + 1}`);
@@ -180,25 +247,27 @@
                 task_priority_icon.innerText = "looks_one";
             }
             else if (priority === 2) {
+                task.style.padding = "8px";
                 task.style.border = "4px solid brown";
                 task.style.background = "#939F41";
                 task_priority_icon.innerText = "looks_two";
             }
             else if (priority === 3) {
+                task.style.padding = "6px";
                 task.style.border = "7px solid brown";
                 task.style.background = "#B4654B";
                 task_priority_icon.innerText = "looks_3";
             }
 
-            eye_icon.addEventListener('click', () => {
-                document.getElementById("task_name_modal").innerHTML = "<b>Название:</b> " + task_name.innerText;
-                document.getElementById("task_team_modal").innerHTML = "<b>Команда:</b> " + task_team.innerText;
-                document.getElementById("task_createdDt_modal").innerHTML = "<b>Создание:</b> " + task_createdDt.innerText;
-                document.getElementById("task_deadline_modal").innerHTML = "<b>Завершение:</b> " + task_deadline.innerText;
-                document.getElementById("task_priority_modal").innerHTML = "<b>Приоритет:</b> "
-                    + (priority === 1 ? "(1) Обычный" : priority === 2 ? "(2) Высокий" : "(3) Экстремальный");
-                document.getElementById("task_status_modal").innerHTML = "<b>Статус:</b> "
-                    + (isChecked ? "Выполнено ✅" : "Не выполнено ❌");
+            document.getElementById(`eye_icon${i + 1}`).addEventListener('click', () => {
+                document.getElementById("task_name_modal").innerHTML = "<b>Task name:</b> " + task_name.innerText;
+                document.getElementById("task_team_modal").innerHTML = "<b>Team:</b> " + task_team.innerText;
+                document.getElementById("task_createdDt_modal").innerHTML = "<b>Create datetime:</b> " + task_createdDt.innerText;
+                document.getElementById("task_deadline_modal").innerHTML = "<b>Deadline:</b> " + task_deadline.innerText;
+                document.getElementById("task_priority_modal").innerHTML = "<b>Priority:</b> "
+                    + (priority === 1 ? "(1) Usual" : priority === 2 ? "(2) High" : "(3) Extreme");
+                document.getElementById("task_status_modal").innerHTML = "<b>Status:</b> "
+                    + (isChecked ? "Done ✅" : "Not done ❌");
 
                 M.Modal.init(document.getElementById('open_task_modal'), {}).open();
             });
@@ -222,6 +291,10 @@
                     if (t !== "OK") alert("Invalid credentials: " + t);
                 });
                 isChecked = !isChecked;
+            });
+
+            document.getElementById(`mail_icon${i + 1}`).addEventListener('click', () => {
+                document.getElementById("textarea1").focus()
             });
         }
 
@@ -255,28 +328,28 @@
             body: new URLSearchParams(new FormData(document.querySelector("#task-form")))
         }).then(r => r.text()).then(t => {
             console.log(t)
-            if (t === "Unauthorized") error_message.innerText = "Неавторизован!";
+            if (t === "Unauthorized") error_message.innerText = t;
             else if (t === "Missing required parameter: task-name") {
-                error_message.innerText = "Отсутствует название задачи!";
+                error_message.innerText = t;
                 new_task_name.style.background = "rgba(255,0,0,.2)";
             }
             else if (t === "Missing required parameter: task-team") {
-                error_message.innerText = "Отсутствует команда!";
+                error_message.innerText = t;
                 people_icon.style.background = "lightblue";
                 new_task_team.style.background = "rgba(255,0,0,.2)";
             }
             else if (t === "Missing required parameter: task-deadline") {
-                error_message.innerText = "Отсутствует завершение задачи!";
+                error_message.innerText = t;
                 new_task_deadline.style.background = "rgba(255,0,0,.2)";
             }
             else if (t === "Missing required parameter: task-priority") {
-                error_message.innerText = "Отсутствует приоритет задачи!";
+                error_message.innerText = t;
                 exclamation_mark_icon.style.background = "lightblue";
                 new_task_priority.style.background = "rgba(255,0,0,.2)";
             }
             else if (t === "OK") {
                 window.location.reload();
-                return
+                return;
             }
 
             M.Modal.init(document.getElementById('error_modal'), {}).open();
@@ -308,5 +381,49 @@
 
         document.querySelector('input[name="story-id-task"]').value = taskId ;
         console.log(taskId);
+        fetch("<%= domain %>/story?task-id=" + taskId)
+            .then(r => r.json())
+            .then(j => {
+                let chatHtml = `<div style='border: 2px solid black; border-bottom: 1px solid black; border-radius: 5px'>`;
+                for(let model of j) chatHtml +=
+                     tpl.replace("{{moment}}",  model.story.createdDt)
+                        .replace("{{user}}",    model.user.name)
+                        .replace("{{content}}", model.story.content);
+
+                document.getElementById("chat").innerHTML = chatHtml + "</div>";
+            });
+    });
+    document.getElementById("add-team-btn").addEventListener("click", () => {
+        fetch("<%= domain %>/team", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: `{"teamName": "${document.getElementById("team-name").value}"}`
+        }).then(r => r.text()).then(t => {
+            if(t === "OK") {
+                alert(t);
+                window.location.reload();
+            }
+            else {
+                alert(t);
+            }
+        });
+    });
+
+    document.getElementById("add-user-to-team-btn").addEventListener("click", () => {
+        const addTeam = document.getElementById("add-team").value;
+        const addUserToTeam = document.getElementById("add-user-to-team").value;
+        fetch("<%= domain %>/team", {
+            method: "PUT",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: `{"id_team": "${addTeam}","id_user": "${addUserToTeam}"}`
+        }).then(r => r.text()).then(t => {
+            if (t === "OK") {
+                alert(t);
+                window.location.reload();
+            }
+            else {
+                alert(t);
+            }
+        });
     });
 </script>

@@ -3,9 +3,11 @@ package itstep.learning.ws;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import itstep.learning.data.DataContext;
+import itstep.learning.data.dao.UserDao;
 import itstep.learning.data.entity.Story;
 import itstep.learning.data.entity.User;
 import itstep.learning.model.StoryViewModel;
+import org.json.JSONObject;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -24,6 +26,7 @@ public class WebsocketServer {
             Collections.synchronizedSet(
                     new HashSet<>()
             );
+    private static final Gson gson = new Gson();
 
     @Inject
     public WebsocketServer(DataContext dataContext) {
@@ -42,6 +45,8 @@ public class WebsocketServer {
 
     @OnMessage
     public void onMessage(String message, Session session) {
+        // Добавить валидацию принятого сообщения, реализовать добавление сообщения в БД
+        // *Реализовать encoder для наших сообщений, внедрить в Websocket
         StoryViewModel res = this.addStory(message, session);
         if(res == null) {
             try {
@@ -53,6 +58,13 @@ public class WebsocketServer {
         else {
             sendToAll(gson.toJson(res));
         }
+//        JSONObject req = new JSONObject(message);
+//        String idTask = null;
+//        if(req.has("id_task")) {
+//            idTask = req.optString("userName");
+//        }
+//        if (idTask != null) {
+//        }
     }
 
     @OnClose
@@ -77,6 +89,26 @@ public class WebsocketServer {
         }
     }
 
+    private class ChatMessage {
+        UUID taskId;
+        String content;
+
+        public UUID getTaskId() {
+            return taskId;
+        }
+
+        public void setTaskId(UUID  taskId) {
+            this.taskId = taskId;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+    }
 }
 /*
 Websocket Server

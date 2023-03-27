@@ -12,6 +12,7 @@ public class ConfigListener extends GuiceServletContextListener {
                 new ServiceModule(),       // точку управления внедрением зависимостей.
                 new StringModule(),        // Традиционно модули разделяют на два (и более) -
                 new LoggerModule(),        // отдельно конфигурация фильтров/сервлетов (RouterModule),
+                new WebsocketModule()      // отдельно служб (реализаций интерфейсов) (ServiceModule)
         ) ;                                // + тематические модули, например, строки
     }
 }

@@ -22,7 +22,7 @@ public class DownloadServlet extends HttpServlet {
         File file = new File(path, requestedFile);
         if (file.isFile() && file.canRead()) {
             String mimeType = Files.probeContentType(file.toPath());
-            System.out.println(mimeType);
+            // System.out.println(mimeType);
 
             // проверка типа файла на изображение
             if( ! mimeType.startsWith("image") || (mimeType.endsWith("gif") || mimeType.endsWith("avif"))) {

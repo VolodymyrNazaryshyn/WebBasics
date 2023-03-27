@@ -54,10 +54,10 @@ public class UserRegisterServlet extends HttpServlet {
             validateModel(model);
             if (userDao.add(model)) {
                 regMessage = "OK";
-                System.out.println(regMessage);
+                // System.out.println(regMessage);
             } else {
                 regMessage = "Add fail";
-                System.out.println(regMessage);
+                // System.out.println(regMessage);
             }
         } catch (IllegalArgumentException ex) {
             System.err.println(ex.getMessage());

@@ -372,6 +372,26 @@
         }
     });
 
+    function sendStoryForm() { // версия с вебсокетом
+        if(!window.websocket) throw 'websocket not init';
+
+        const storyIdTask = document.querySelector('input[name="story-id-task"]');
+        if(!storyIdTask) throw 'input[name="story-id-task"] not found';
+        const taskId = storyIdTask.value; // TODO: Validate
+        if(taskId.length < 36) {
+            alert("Select a task");
+            return;
+        }
+
+        const textarea = document.getElementById('textarea1');
+        if(!textarea) throw 'textarea not found';
+        const storyMessage = textarea.value; // TODO: Validate
+
+        window.websocket.send(JSON.stringify({ taskId: taskId, content: storyMessage }));
+
+        textarea.value = "";
+    }
+
     function sendStoryFormHttp() {
         fetch('<%= domain + "/story" %>', {
             method: "POST",

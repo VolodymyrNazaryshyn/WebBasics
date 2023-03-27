@@ -38,7 +38,7 @@
                     <i id="edit_icon<%= i %>" class="material-icons">edit</i>
                     <i id="delete_icon<%= i %>" class="material-icons">delete</i>
                     <a id="mail_icon<%= i %>" href="#<%= tasks.get(i - 1).getId() %>" style="cursor: pointer; margin-top: 5px">
-                        <i style="color: black" class="material-icons">mail</i>
+                        <i style="color: black" class="material-icons mail_<%= tasks.get(i - 1).getId() %>">mail</i>
                     </a>
                 </div>
             </div>
@@ -49,7 +49,7 @@
 
 <!-- region Discuss block -->
 <div style="display: block; width: 100%; background: lightblue; border-radius: 20px; margin-top: 15px">
-    <h4 style="text-align: center">Discussion block</h4>
+    <h4 style="text-align: center" id="discussion-title">Discussion</h4>
     <div id="chat" style="width: 90%; margin: auto"></div>
     <form method="post" id="story-form" style="width: 90%; margin: auto">
         <textarea id="textarea1" class="materialize-textarea" name="story-text"></textarea>
@@ -58,8 +58,6 @@
         </div>
         <input type="hidden" name="story-id-task" />
     </form>
-    <textarea id="textarea2"></textarea>
-    <button onclick="sendClick()">Send</button>
 </div>
 <!-- endregion -->
 
@@ -221,7 +219,7 @@
         const tasks = document.getElementsByClassName("task");
 
         for (let i = 0; i < tasks.length; ++i) {
-            const task_name = document.getElementById(`task${i + 1}_name`);
+            let task_name = document.getElementById(`task${i + 1}_name`);
             const task_team = document.getElementById(`task${i + 1}_team`);
             const task_createdDt = document.getElementById(`task${i + 1}_createdDt`);
             const task_deadline = document.getElementById(`task${i + 1}_deadline`);
@@ -296,6 +294,11 @@
             });
 
             document.getElementById(`mail_icon${i + 1}`).addEventListener('click', () => {
+                const discussTitle = document.getElementById("discussion-title");
+                discussTitle.innerText = `Discussion: ${task_name.innerText}`;
+                const mailIcon = document.querySelector(`a#mail_icon${i + 1} > i`);
+                if (mailIcon.innerText !== "mail") mailIcon.innerText = "mail";
+                if (mailIcon.style.color !== "black") mailIcon.style.color = "black";
                 document.getElementById("textarea1").focus()
             });
         }
@@ -305,13 +308,8 @@
         });
 
         initWebsocket();
+        window.dispatchEvent(new Event("hashchange"));
     });
-
-    // function sendClick() {
-    //    window.websocket.send(
-    //        document.getElementById("textarea2").value
-    //    );
-    // }
 
     function initWebsocket() {
        window.websocket = new WebSocket(`ws://${window.location.host}/WebBasics/chat`);
@@ -325,16 +323,36 @@
        // console.log("onWsOpen", e)
     }
 
+    let tempStory = null;
     function onWsMessage(e) {
-       // console.log("onWsMessage", e.data)
-       let model = JSON.parse(e.data);
+       const model = JSON.parse(e.data);
        if(typeof model.status !== 'undefined') {
            alert("Message was not sent");
+           return;
+       }
+       if(model.story.idTask === window.location.hash.substring(1)) {
+           const chat = document.getElementById("chat");
+           const html = `
+<div id="{{storyId}}" style="padding: 10px 20px; border: 2px solid black; border-top: 0px; margin: 0 5%;">
+    <div style="display: flex; justify-content: space-between;">
+        <div>{{user}}</div>
+        <div>{{moment}}</div>
+    </div>
+    <div style="margin-top: 15px;">{{content}}</div>
+</div>
+`.replace("{{storyId}}", model.story.id)
+               .replace("{{moment}}",  model.story.createdDt)
+               .replace("{{user}}",    model.user.name)
+               .replace("{{content}}", model.story.content);
+
+           chat.insertAdjacentHTML("afterend", html);
+           tempStory = model.story.id;
        }
        else {
-           const chat = document.getElementById("chat");
-           const html = htmlFromStoryModel(model);
-           chat.insertAdjacentElement("afterend", html);
+           // выводим иконку нового сообщения
+           const newMsgIcon =  document.querySelector("i.mail_" + model.story.idTask);
+           newMsgIcon.innerText = "fiber_new";
+           newMsgIcon.style.color = "blue";
        }
     }
 
@@ -371,7 +389,6 @@
             headers: {"Content-Type": "application/x-www-form-urlencoded",},
             body: new URLSearchParams(new FormData(document.querySelector("#task-form")))
         }).then(r => r.text()).then(t => {
-            console.log(t)
             if (t === "Unauthorized") error_message.innerText = t;
             else if (t === "Missing required parameter: task-name") {
                 error_message.innerText = t;
@@ -420,21 +437,21 @@
     });
 
     window.addEventListener('hashchange', () => {
+        if (tempStory !== null) document.getElementById(tempStory).style.display = "none";
+
         const taskId = window.location.hash.substring(1);
         if (! /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(taskId) ) return;
 
+        // TODO: проверить, что такая задача есть у пользователя
+        // (зачистить хеш / вывести предупреждение, что нет такой задачи)
+
         document.querySelector('input[name="story-id-task"]').value = taskId ;
-        console.log(taskId);
         // Получить список историй по этой задаче и отобразить
         fetch("<%= domain %>/story?task-id=" + taskId)
             .then(r => r.json())
             .then(j => {
-                let chatHtml = `<div style='border: 2px solid black; border-bottom: 1px solid black; border-radius: 5px'>`;
-                for(let model of j) chatHtml +=
-                     tpl.replace("{{moment}}",  model.story.createdDt)
-                        .replace("{{user}}",    model.user.name)
-                        .replace("{{content}}", model.story.content);
-
+                let chatHtml = `<div style='border: 2px solid black; border-bottom: 1px solid black;'>`;
+                for(let model of j) chatHtml += htmlFromStoryModel(model);
                 document.getElementById("chat").innerHTML = chatHtml + "</div>";
             });
     });

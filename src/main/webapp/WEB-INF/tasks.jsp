@@ -324,6 +324,7 @@
     }
 
     let tempStory = null;
+
     function onWsMessage(e) {
        const model = JSON.parse(e.data);
        if(typeof model.status !== 'undefined') {
@@ -341,11 +342,11 @@
     <div style="margin-top: 15px;">{{content}}</div>
 </div>
 `.replace("{{storyId}}", model.story.id)
-               .replace("{{moment}}",  model.story.createdDt)
+               .replace("{{moment}}",  utcDateToString(model.story.createdDt))
                .replace("{{user}}",    model.user.name)
                .replace("{{content}}", model.story.content);
 
-           chat.insertAdjacentHTML("afterend", html);
+           chat.insertAdjacentHTML("beforeend", html);
            tempStory = model.story.id;
        }
        else {
@@ -471,10 +472,18 @@
             .then(r => r.json())
             .then(j => {
                 let chatHtml = `<div style='border: 2px solid black; border-bottom: 1px solid black;'>`;
-                for(let model of j) chatHtml += htmlFromStoryModel(model);
+                let models = j.sort((a, b) => Date.parse(a.story.createdDt) - Date.parse(b.story.createdDt));
+                for(let model of models) chatHtml += htmlFromStoryModel(model);
                 document.getElementById("chat").innerHTML = chatHtml + "</div>";
             });
     });
+
+    function htmlFromStoryModel(model) {
+        return tpl.replace("{{moment}}",  utcDateToString(model.story.createdDt))
+                  .replace("{{user}}",    model.user.name)
+                  .replace("{{content}}", model.story.content);
+    }
+
     document.getElementById("add-team-btn").addEventListener("click", () => {
         fetch("<%= domain %>/team", {
             method: 'POST',
@@ -508,4 +517,11 @@
             }
         });
     });
+
+    function utcDateToString(dateString) {
+        const dt = new Date(dateString + " UTC");
+        const timeString = dt.toTimeString().substring(0, 8);
+
+        return dt.toDateString() === new Date().toDateString() ? timeString : dt.toDateString() + ' ' + timeString;
+    }
 </script>

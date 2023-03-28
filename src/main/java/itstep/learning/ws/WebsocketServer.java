@@ -45,26 +45,10 @@ public class WebsocketServer {
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        // Добавить валидацию принятого сообщения, реализовать добавление сообщения в БД
-        // *Реализовать encoder для наших сообщений, внедрить в Websocket
         StoryViewModel res = this.addStory(message, session);
-        if(res == null) {
-            try {
-                session.getBasicRemote().sendText("{ \"status\": 400 }");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        else {
-            sendToAll(gson.toJson(res));
-        }
-//        JSONObject req = new JSONObject(message);
-//        String idTask = null;
-//        if(req.has("id_task")) {
-//            idTask = req.optString("userName");
-//        }
-//        if (idTask != null) {
-//        }
+        if(res != null) { sendToAll(gson.toJson(res)); return; }
+        try { session.getBasicRemote().sendText("{ \"status\": 400 }"); }
+        catch (IOException ex) { ex.printStackTrace(); }
     }
 
     @OnClose

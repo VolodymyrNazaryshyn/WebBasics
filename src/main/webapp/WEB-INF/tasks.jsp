@@ -194,7 +194,20 @@
 </div>
 <!-- endregion -->
 
+<button class="btn waves-effect waves-teal" onclick="testEmail()">
+    Test Email<i class="material-icons right">add</i>
+</button>
+<div id="preloader"></div>
 <script>
+    function testEmail() {
+        preloader.innerHTML = "Wait...";
+        fetch("<%= domain %>/story", {
+            method: "PUT"
+        }).then(r => r.text())
+            .then(t => { console.log(t); preloader.innerHTML = "Done"; })
+            .catch(err => { console.log(err); preloader.innerHTML = "Error"; });
+    }
+
     const tpl = `
 <div style="padding: 10px 20px; border-bottom: 1px solid black;">
     <div style="display: flex; justify-content: space-between;">

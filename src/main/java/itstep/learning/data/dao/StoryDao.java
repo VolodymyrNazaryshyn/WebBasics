@@ -49,13 +49,15 @@ public class StoryDao {
 
     public Story create(Story story) {
         story.setId(UUID.randomUUID());
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneOffset.UTC);
         try {
             story.setCreatedDt(
-                    new SimpleDateFormat("yyyy-MM-dd'T'hh-mm-ss").parse(zonedDateTime.toString())
+                    Entity.iso8601DatetimeFormat.parse(
+                            ZonedDateTime.now(ZoneOffset.UTC).toString())
             );
         }
-        catch (Exception ignored) {}
+        catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
 
         story.setCreatedDt(new Date());
         String sql = "INSERT INTO stories  ( `id`, `id_user`, `id_task`, `id_reply`, `content`, `created_dt`) "

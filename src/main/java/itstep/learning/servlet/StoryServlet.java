@@ -10,6 +10,11 @@ import itstep.learning.model.StoryViewModel;
 import itstep.learning.service.auth.AuthService;
 import org.json.JSONObject;
 
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +23,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 
 @Singleton
@@ -95,5 +101,33 @@ public class StoryServlet extends HttpServlet {
             return "Invalid value: story-id-task";
         }
         return dataContext.getStoryDao().add(story) ? "OK" : "Inner error";
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Test Email
+        Properties prop = new Properties();
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        prop.put("mail.smtp.ssl.protocols", "TLSv1.2");
+
+        Session mailSession = Session.getInstance( prop );
+        mailSession.setDebug( true ); // log in console
+        Transport transport;
+        try {
+            MimeMessage message = new MimeMessage(mailSession);
+            message.setFrom(new InternetAddress("project.recipe2023@gmail.com"));
+            message.setSubject("Hello from Java");
+            message.setContent("PUT method works", "text/plain");
+            transport = mailSession.getTransport("smtp");
+            transport.connect("smtp.gmail.com", "project.recipe2023@gmail.com", "pcwluhwwwfkitwtd");
+            transport.sendMessage(message, InternetAddress.parse("volodimirnazarisin@gmail.com"));
+            transport.close();
+        } catch (MessagingException ex) {
+            System.out.println(ex.getMessage());
+        }
+        resp.getWriter().print("PUT works");
     }
 }

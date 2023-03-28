@@ -89,6 +89,34 @@ public class WebsocketServer {
         }
     }
 
+    private StoryViewModel addStory(String message, Session session) {
+        ChatMessage chatMessage = gson.fromJson(message, ChatMessage.class);
+
+        if(chatMessage.getContent() == null || chatMessage.getContent().length() < 1) return null;
+        if(chatMessage.getTaskId() == null) return null;
+
+        User authUser = (User) session.getUserProperties().get("authUser");
+        Story story = new Story();
+        story.setIdUser(authUser.getId());
+        story.setIdTask(chatMessage.getTaskId());
+        story.setContent(chatMessage.getContent());
+        story = dataContext.getStoryDao().create(story);
+
+        if(story == null) return null;
+
+        StoryViewModel model =
+                new StoryViewModel(story, dataContext.getUserDao().getById(story.getIdUser()), null);
+
+        if (story.getIdReply() != null) {
+            Story reply = dataContext.getStoryDao().getById(story.getIdReply());
+            model.setReplyStory(
+                    new StoryViewModel(reply, dataContext.getUserDao().getById(reply.getIdUser()), null)
+            );
+        }
+
+        return model;
+    }
+
     private class ChatMessage {
         UUID taskId;
         String content;
